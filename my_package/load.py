@@ -27,16 +27,17 @@ class FinancialNewsLoader(BaseLoader):
 
     def load(self) -> List[Document]:
         documents = []
-        for filename in os.listdir(self.directory_path):
-            if filename.endswith(".json"):
-                file_path = os.path.join(self.directory_path, filename)
-                with open(file_path, 'r') as file:
-                    data = json.load(file)
-                    document = Document(
-                        id=data['uuid'],
-                        dataset='financial',
-                        title=data['title'],
-                        text=data['text']
-                    )
-                    documents.append(document)
+        for root, _, files in os.walk(self.directory_path):
+            for filename in files:
+                if filename.endswith(".json"):
+                    file_path = os.path.join(root, filename)
+                    with open(file_path, 'r') as file:
+                        data = json.load(file)
+                        document = Document(
+                            id=data['uuid'],
+                            dataset='financial',
+                            title=data['title'],
+                            text=data['text']
+                        )
+                        documents.append(document)
         return documents
