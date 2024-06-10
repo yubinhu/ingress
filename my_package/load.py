@@ -48,13 +48,20 @@ class FinancialNewsLoader(BaseLoader):
             for filename in files:
                 if filename.endswith(".json"):
                     file_path = os.path.join(root, filename)
-                    with open(file_path, 'r') as file:
-                        data = json.load(file)
-                        document = Document(
-                            id=data['uuid'],
-                            dataset='financial',
-                            title=data['title'],
-                            text=data['text']
-                        )
+                    document = self.load_single_json(file_path)
+                    if document:
                         documents.append(document)
         return documents
+    
+    def load_single_json(self, file_path: str) -> Document:
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+            if not data or not data.get('uuid') or not data.get('title') or not data.get('text'):
+                return None
+            document = Document(
+                id=data['uuid'],
+                dataset='financial',
+                title=data['title'],
+                text=data['text']
+            )
+        return document
