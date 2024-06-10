@@ -8,13 +8,13 @@
     - FinancialNewsLoader: Inherits from BaseLoader and loads financial news articles dataset from JSON files.
 - Key Decisions:
     - Since we have a lot of data, we select to discard any document with defective data instead of trying to fix them.
-    - The separation of data model from functional components allows for easy addition of new loaders and modifications of data models.
+    - The separation of the data model from functional components allows for easy additions of new loaders and modifications of data models.
 2.	Chunking Documents
     - Objective: Break down large documents into smaller chunks for efficient processing.
     - Classes:
         - DocumentChunker: Responsible for chunking documents into smaller components.
     - Key Decisions:
-        - The chunking strategy is cut the document text into fixed-size chunks (e.g., 200 characters). This is probably sufficient for simple use cases. 
+        - The chunking strategy is to cut the document text into fixed-size chunks (e.g., 200 characters). This is probably sufficient for simple use cases. 
         - This design can be extended to support more complex chunking strategies, such as sentence-based or paragraph-based chunking. 
 3.	Embedding Chunks
     - Objective: Generate embeddings for each chunk to facilitate downstream tasks such as search and retrieval.
@@ -35,6 +35,6 @@ To add a new dataset, a developer would:
 1.	Unit Tests:
     - Unit tests can be easily written up for chunking and embedding components to make sure they don't break on existing datasets.
 2.	Integration Tests:
-    - There is an example of an integration test in test.ipynb that tests the entire pipeline on a both datasets.
+    - There is an example of an integration test in test.ipynb that tests the entire pipeline on both datasets.
 3.	Performance Tests:
     - Measure the pipeline's performance with large datasets and distributed systems to ensure it meets scalability requirements.
