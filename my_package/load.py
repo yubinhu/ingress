@@ -10,15 +10,23 @@ class BaseLoader:
         raise NotImplementedError
 
 class FootballNewsLoader(BaseLoader):
-    def __init__(self, file_path: str):
-        self.file_path = file_path
+    def __init__(self, directory_path: str):
+        self.directory_path = directory_path
 
     def load(self) -> List[Document]:
-        df = pd.read_csv(self.file_path)
-        documents = [
-            Document(id=str(i), dataset='football', title=row['title'], text=row['content'])
-            for i, row in df.iterrows()
-        ]
+        documents = []
+        for filename in os.listdir(self.directory_path):
+            if filename.endswith(".csv"):
+                file_path = os.path.join(self.directory_path, filename)
+                df = pd.read_csv(file_path)
+                for i, row in df.iterrows():
+                    document = Document(
+                        id=str(i),
+                        dataset='football',
+                        title=str(row['title']) if pd.notna(row['title']) else "",
+                        text=str(row['content']) if pd.notna(row['content']) else ""
+                    )
+                    documents.append(document)
         return documents
 
 class FinancialNewsLoader(BaseLoader):
