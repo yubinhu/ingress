@@ -18,20 +18,24 @@ class FootballNewsLoader(BaseLoader):
         # Create a hash of the content using SHA-256
         return hashlib.sha256(content.encode('utf-8')).hexdigest()
 
+    def load_single_csv(self, file_path: str) -> List[Document]:
+        documents = []
+        df = pd.read_csv(file_path)
+        for _, row in df.iterrows():
+            content = str(row['content']) if pd.notna(row['content']) else None
+            title = str(row['title']) if pd.notna(row['title']) else None
+            if not content or not content.strip() or not title or not title.strip():
+                continue
+            document_id = self._hash_content(content)
+            documents.append(Document(id=document_id, dataset='football', title=title, text=content))
+        return documents
+
     def load(self) -> List[Document]:
         documents = []
         for filename in os.listdir(self.directory_path):
-            if not filename.endswith(".csv"):
-                continue
-            file_path = os.path.join(self.directory_path, filename)
-            df = pd.read_csv(file_path)
-            for _, row in df.iterrows():
-                content = str(row['content']) if pd.notna(row['content']) else None
-                if not content:
-                    continue
-                document_id = self._hash_content(content)
-                title = str(row['title']) if pd.notna(row['title']) else ""
-                documents.append(Document(id=document_id, dataset='football', title=title, text=content))
+            if filename.endswith(".csv"):
+                file_path = os.path.join(self.directory_path, filename)
+                documents.extend(self.load_single_csv(file_path))
         return documents
 
 class FinancialNewsLoader(BaseLoader):
